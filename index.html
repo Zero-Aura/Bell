@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bell Motion</title>
+
+<style>
+
+body{
+text-align:center;
+font-family:sans-serif;
+background:#f2f2f2;
+}
+
+#bell{
+width:120px;
+margin-top:80px;
+display:inline-block;
+transition: transform 0.1s;
+}
+
+button{
+padding:12px 20px;
+font-size:16px;
+margin-top:40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Press Start then rotate phone</h2>
+
+<button onclick="start()">Start</button>
+
+<br>
+
+<img id="bell" src="https://cdn-icons-png.flaticon.com/512/1827/1827349.png">
+
+<script>
+
+let bell = document.getElementById("bell");
+let audioCtx;
+
+function playBell(){
+
+let osc = audioCtx.createOscillator();
+let gain = audioCtx.createGain();
+
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+
+osc.type = "triangle";
+osc.frequency.value = 700;
+
+gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+
+osc.start();
+osc.stop(audioCtx.currentTime + 1.2);
+
+}
+
+function start(){
+
+audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+window.addEventListener("deviceorientation", function(event){
+
+let tilt = event.gamma;
+
+bell.style.transform = "rotate(" + tilt + "deg)";
+
+if(Math.abs(tilt) > 35){
+playBell();
+}
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
